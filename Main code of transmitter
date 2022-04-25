@@ -1,0 +1,37 @@
+#include "sys.h"
+#include "usart.h"
+#include "delay.h"
+#include "ledx.h"
+#include "NRF24L01.h"
+#include "bsp_infrared.h"
+int main(void)
+{
+	uint8_t tmp_buf[6] = {"12345"};
+    SystemInit();
+    delay_init();//Delay function initialization
+    LEDX_GPIO_Config();
+	Init_NRF24L01();
+	uart_init(115200);
+	irInit();	
+	
+	if(NRF24L01_Check())
+	{
+		printf("NRF24L01 is Not work!\r\n");
+	}
+	printf("NRF24L01 is working!\r\n");
+			
+	TX_Mode();//turn NRF to sending mode
+	printf("ALL is OK!\r\n");
+    while(1)
+    {
+		if(irDetect() == 1)		
+		{
+				NRF24L01_TxPacket(tmp_buf);
+				LEDX_ON;
+				delay_ms(500);
+				LEDX_OFF;
+				delay_ms(500);
+		}
+    }
+	
+}
